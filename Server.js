@@ -65,6 +65,7 @@ addstyles = fs.readFileSync(indexStyleFilePath).toString();
 
             html += `
                         </section>
+                        
                     </main>
                     <footer>
                         <p>&copy; 2024 Personal Blog | theNewtonCode. All rights reserved.</p>
@@ -77,11 +78,96 @@ addstyles = fs.readFileSync(indexStyleFilePath).toString();
             res.end(html);
         });
     // Serve individual blog posts
-    } 
+} else if (req.method === 'GET' && pathname !== '/' && pathname !== '/about.html' && pathname !== '/contact.html') {
+    const blogName = pathname.slice(1);
+    fs.readFile(blogsFilePath, 'utf8', (err, data) => {
+        if (err) {
+            res.writeHead(500, {'Content-Type': 'text/plain'});
+            res.end('Internal Server Error');
+            return;
+        }
+        const StyleFilePath = path.join(__dirname, 'static/post_css.txt');
+        let addstyles = "";
+        addstyles = fs.readFileSync(StyleFilePath).toString();
+        const blogs = JSON.parse(data);
+        const blog = blogs[blogName];
+
+        if (blog) {
+            const html = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>${blog.title}</title>
+                    <link rel="stylesheet" href="styles.css">
+                </head>
+                <body>
+                <style>
+                ${addstyles}</style>
+                    <header>
+                        <h1>${blog.title}</h1>
+                        <nav>
+                            <a href="/">Home</a>
+                            <a href="/about.html">About</a>
+                            <a href="/contact.html">Contact</a>
+                        </nav>
+                    </header>
+                    <main>
+                        <article>
+                            <p>Published on ${blog.time}</p>
+                            <p>${blog.content}</p>
+                            <p><a href="/">Back to Home</a></p>
+                        </article>
+                    </main>
+                    <footer>
+                        <p>&copy; 2024 Personal Blog | theNewtonCode. All rights reserved.</p>
+                    </footer>
+                </body>
+                </html>
+            `;
+
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.end(html);
+        } else {
+            res.writeHead(404, {'Content-Type': 'text/html'});
+            res.end('<h1>Blog Post Not Found</h1>');
+        }
+    });
+} 
+else if(req.method === 'GET' && pathname === '/about.html'){
+    const aboutFile = path.join(__dirname, 'static/about.html');
+    fs.readFile(aboutFile, (err, data)=>{
+        if(err){
+            res.writeHead(500), {'Content-Type':'text/plain'}
+            res.end('Some internal server error');
+            return;
+        }
+        res.writeHead(200, {'Content-Type':'text/html'});
+        res.end(data);
+    })
+}
+else if(req.method === 'GET' && pathname === '/contact.html'){
+    const aboutFile = path.join(__dirname, 'static/contact.html');
+    fs.readFile(aboutFile, (err, data)=>{
+        if(err){
+            res.writeHead(500), {'Content-Type':'text/plain'}
+            res.end('Some internal server error');
+            return;
+        }
+        res.writeHead(200, {'Content-Type':'text/html'});
+        res.end(data);
+    })
+}
+else{
+    res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.end('Not Found');
+}
 });
 
 
-//serving on localhost
+
+//serving
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
