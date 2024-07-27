@@ -1,0 +1,14 @@
+{
+    "blog1": {
+        "title": "My First Blog Post",
+        "content": "This is the content of my first blog post.",
+        "keywords": "first, blog, post",
+        "time": "July 1, 2024"
+    },
+    "blog2": {
+        "title": "Another Interesting Post",
+        "content": "This is a summary of another interesting post.",
+        "keywords": "interesting, post",
+        "time": "July 15, 2024"
+    }
+}
